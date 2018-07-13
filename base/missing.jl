@@ -69,6 +69,13 @@ isapprox(::Missing, ::Missing; kwargs...) = missing
 isapprox(::Missing, ::Any; kwargs...) = missing
 isapprox(::Any, ::Missing; kwargs...) = missing
 
+# Needed for isapprox on arrays
+rtoldefault(::Type{Union{T,Missing}}, ::Type{S}, atol) where {T,S} = rtoldefault(T, S, atol)
+rtoldefault(::Type{T}, ::Type{Union{S,Missing}}, atol) where {T,S} = rtoldefault(T, S, atol)
+rtoldefault(::Type{Union{T,Missing}}, ::Type{Union{S,Missing}}, atol) where {T,S} =
+    rtoldefault(T, S, atol)
+rtoldefault(::Type{Missing}, ::Type{Missing}, atol) = NaN
+
 # Unary operators/functions
 for f in (:(!), :(~), :(+), :(-), :(identity), :(zero), :(one), :(oneunit),
           :(isfinite), :(isinf), :(isodd),

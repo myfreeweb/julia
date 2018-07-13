@@ -467,6 +467,7 @@ julia> norm(-2, Inf)
 ```
 """
 @inline norm(x::Number, p::Real=2) = p == 0 ? (x==0 ? zero(abs(x)) : oneunit(abs(x))) : abs(x)
+norm(::Missing, p::Real=2) = missing
 
 
 # special cases of opnorm
@@ -1337,7 +1338,9 @@ function isapprox(x::AbstractArray, y::AbstractArray;
     rtol::Real=Base.rtoldefault(promote_leaf_eltypes(x),promote_leaf_eltypes(y),atol),
     nans::Bool=false, norm::Function=norm)
     d = norm(x - y)
-    if isfinite(d)
+    if ismissing(d)
+        return missing
+    elseif isfinite(d)
         return d <= max(atol, rtol*max(norm(x), norm(y)))
     else
         # Fall back to a component-wise approximate comparison
